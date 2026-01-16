@@ -1,0 +1,195 @@
+{
+  "last_updated": "2026-01-15T00:25:00-06:00",
+  "generated_by": "Claude Opus 4.5",
+  "version": "2.0",
+  "entities": {
+    "AFK": {
+      "name": "Afro Farm Holding Ltd",
+      "location": "Loitokitok, Kenya",
+      "type": "Agriculture",
+      "health_score": 85,
+      "status": "Active",
+      "pending_items": 3,
+      "recent_activity": "KES 7,828 debited (bank transactions)",
+      "compliance": "GLOBALG.A.P. Certified",
+      "team_lead": "Richard"
+    },
+    "GAKP": {
+      "name": "GAK Properties LLC",
+      "location": "Minneapolis, USA",
+      "type": "Real Estate",
+      "health_score": 92,
+      "status": "Active",
+      "pending_items": 1,
+      "recent_activity": "Lease management ongoing",
+      "properties_count": 4
+    },
+    "GIFP": {
+      "name": "GIF Properties LLC",
+      "location": "Minneapolis, USA",
+      "type": "Real Estate",
+      "health_score": 88,
+      "status": "Active",
+      "pending_items": 2,
+      "recent_activity": "Tenant relations stable",
+      "properties_count": 3
+    },
+    "COMF": {
+      "name": "Comfort Services LLC",
+      "location": "Minneapolis, USA",
+      "type": "Healthcare",
+      "health_score": 90,
+      "status": "Active",
+      "pending_items": 0,
+      "recent_activity": "Service delivery on track",
+      "hipaa_compliant": true,
+      "processing": "Local Ollama Only"
+    },
+    "GAKC": {
+      "name": "GAK Commodities Ltd",
+      "location": "Nairobi, Kenya",
+      "type": "Real Estate",
+      "health_score": 78,
+      "status": "Active",
+      "pending_items": 1,
+      "recent_activity": "Kenya property holdings"
+    },
+    "PRSL": {
+      "name": "Personal",
+      "location": "Minneapolis, USA",
+      "type": "Personal",
+      "health_score": 95,
+      "status": "Active",
+      "pending_items": 0,
+      "recent_activity": "Family priorities balanced"
+    }
+  },
+  "ai_status": {
+    "claude": {
+      "status": "Online",
+      "model": "claude-opus-4-5-20251101",
+      "role": "Hands - Execution & Building",
+      "capabilities": ["code", "automation", "file_ops", "analysis"]
+    },
+    "gemini": {
+      "status": "Online",
+      "models": ["pro", "flash"],
+      "role": "Brain - Research & Decisions",
+      "capabilities": ["research", "strategic_planning", "google_integration"]
+    },
+    "ollama": {
+      "status": "Online",
+      "url": "http://localhost:11434",
+      "models": ["gandi-assistant", "arie-godmode", "llama3.2", "llava", "mistral"],
+      "model_count": 5,
+      "role": "Vault - HIPAA-Safe Local Processing",
+      "capabilities": ["local_processing", "phi_handling", "vision"]
+    },
+    "copilot": {
+      "status": "Available",
+      "role": "Code Assistant",
+      "capabilities": ["code_completion", "suggestions"]
+    }
+  },
+  "integrations": {
+    "google_workspace": {
+      "status": "Connected",
+      "services": ["Gmail", "Calendar", "Drive", "Docs", "Sheets"],
+      "last_sync": "2026-01-15T00:20:00-06:00"
+    },
+    "memory_mcp": {
+      "status": "Connected",
+      "entities_count": 45,
+      "relations_count": 38
+    },
+    "claude_flow": {
+      "status": "Healthy",
+      "version": "3.0.0-alpha",
+      "hooks_active": 26,
+      "tools_available": 171,
+      "uptime": "6h 36m"
+    },
+    "filesystem": {
+      "status": "Connected",
+      "drives": ["C:", "D:", "G:"]
+    },
+    "github": {
+      "status": "Connected",
+      "capabilities": ["repos", "issues", "prs", "commits"]
+    }
+  },
+  "email_summary": {
+    "unread_count": 5,
+    "priority_emails": [
+      {
+        "from": "Middle East Bank",
+        "subject": "KES 4,859.00 debited from A/C 0240310013977",
+        "entity": "AFK",
+        "priority": "high"
+      },
+      {
+        "from": "Middle East Bank",
+        "subject": "KES 355.00 debited",
+        "entity": "AFK",
+        "priority": "medium"
+      },
+      {
+        "from": "Middle East Bank",
+        "subject": "KES 605.00 debited",
+        "entity": "AFK",
+        "priority": "medium"
+      },
+      {
+        "from": "Middle East Bank",
+        "subject": "KES 2,009.00 debited",
+        "entity": "AFK",
+        "priority": "medium"
+      },
+      {
+        "from": "Anthropic",
+        "subject": "Receipt #2141-0000-2907",
+        "entity": "PRSL",
+        "priority": "low"
+      }
+    ],
+    "total_afk_transactions": "KES 7,828"
+  },
+  "calendar_summary": {
+    "events_today": 0,
+    "next_event": null,
+    "kenya_window": {
+      "active": false,
+      "start": "6:00 AM CST",
+      "end": "9:00 AM CST",
+      "description": "Best time for Kenya farm calls"
+    }
+  },
+  "times": {
+    "minneapolis": {
+      "timezone": "CST (UTC-6)",
+      "display": "Minneapolis Time"
+    },
+    "kenya": {
+      "timezone": "EAT (UTC+3)",
+      "display": "Kenya Time",
+      "offset_from_msp": "+9 hours"
+    }
+  },
+  "system_health": {
+    "overall": "Healthy",
+    "components": {
+      "swarm": 100,
+      "memory": 95,
+      "neural": 90,
+      "mcp": 100
+    },
+    "active_agents": 0,
+    "pending_tasks": 0
+  },
+  "quick_actions": [
+    {"name": "Morning Briefing", "command": "morning briefing", "icon": "sunrise"},
+    {"name": "Kenya Window", "command": "kenya window", "icon": "globe"},
+    {"name": "Farm Status", "command": "farm status", "icon": "tractor"},
+    {"name": "Commander's Review", "command": "commander's review", "icon": "clipboard"}
+  ]
+}
