@@ -49,6 +49,12 @@ refresh_count = st_autorefresh(interval=300000, limit=None, key="dashboard_autor
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = True  # Default ON for cyberpunk
 
+# ARIA GOD MODE v6 - Entity Router Session State
+if "current_entity" not in st.session_state:
+    st.session_state.current_entity = None  # Currently detected working entity
+if "current_entity_path" not in st.session_state:
+    st.session_state.current_entity_path = None  # Path for autonomous folder selection
+
 # =============================================================================
 # DEEP SPACE CYBERPUNK CSS - ALWAYS APPLIED
 # =============================================================================
@@ -308,6 +314,55 @@ ENTITIES = {
     "COMF": {"name": "Comfort Services", "color": "#00B8FF", "icon": "💊", "glow": "#00B8FF55", "location": "USA", "hipaa": True},
     "GAKC": {"name": "GAK Commodities", "color": "#9D00FF", "icon": "📦", "glow": "#9D00FF55", "location": "Kenya"},
     "PRSL": {"name": "Personal", "color": "#FF6B35", "icon": "👤", "glow": "#FF6B3555", "location": "USA"},
+    "FMLY": {"name": "Family", "color": "#FF69B4", "icon": "👨‍👩‍👧", "glow": "#FF69B455", "location": "USA"},
+}
+
+# =============================================================================
+# ARIA GOD MODE v6 FINAL - ENTITY ROUTER (Autonomous Folder Selection)
+# =============================================================================
+# This maps keywords to entities for automatic detection from commands
+
+ENTITY_ROUTER = {
+    "AFK": {
+        "keywords": ["farm", "crops", "richard", "kenya", "globalg.a.p.", "harvest", "agriculture",
+                     "loitokitok", "afro farm", "workers", "agronomist", "suleiman", "field",
+                     "french beans", "onions", "passion fruit", "compliance", "audit"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/AFK",
+        "hipaa": False,
+    },
+    "GAKP": {
+        "keywords": ["gak properties", "gakp", "lease", "tenant", "rent", "property management",
+                     "maintenance", "real estate"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/GAKP",
+        "hipaa": False,
+    },
+    "GIFP": {
+        "keywords": ["gif", "gif properties", "gifp", "gif property", "gif rental", "gif income",
+                     "fardowsa rental", "fardowsa property", "investment property"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/GIFP",
+        "hipaa": False,
+    },
+    "COMF": {
+        "keywords": ["comfort", "healthcare", "patient", "schedule", "hipaa", "service",
+                     "staff", "medical", "health", "comf", "client"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/COMF",
+        "hipaa": True,  # Route through Ollama ONLY for privacy
+    },
+    "GAKC": {
+        "keywords": ["commodities", "gakc", "kenya property"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/GAKC",
+        "hipaa": False,
+    },
+    "PRSL": {
+        "keywords": ["personal", "my", "finance", "bank", "chase", "savings", "budget"],
+        "path": "G:/My Drive/GANDI HUB/3 MY BUSINESSES/PRSL",
+        "hipaa": False,
+    },
+    "FMLY": {
+        "keywords": ["family", "samsam", "fardowsa", "mohamed", "wife", "brother", "sister"],
+        "path": "G:/My Drive/GANDI HUB/4 FAMILY",
+        "hipaa": False,
+    },
 }
 
 # =============================================================================
@@ -347,6 +402,63 @@ def fetch_n8n_webhook(endpoint, data=None):
 def send_voice_command(command_text):
     """Send voice command to n8n for processing"""
     return fetch_n8n_webhook("claude-commander", {"command": command_text, "source": "streamlit"})
+
+# =============================================================================
+# ARIA GOD MODE v6 - ENTITY DETECTION (Autonomous Folder Selection)
+# =============================================================================
+
+def detect_entity_from_command(command_text):
+    """
+    ARIA GOD MODE v6 FINAL - Autonomous Entity Detection
+    Scans command text for keywords and returns detected entity info.
+    Returns: dict with entity code, name, path, hipaa flag, and matched keywords
+    """
+    if not command_text:
+        return None
+
+    command_lower = command_text.lower()
+    matches = []
+
+    for entity_code, entity_data in ENTITY_ROUTER.items():
+        matched_keywords = []
+        for keyword in entity_data["keywords"]:
+            if keyword.lower() in command_lower:
+                matched_keywords.append(keyword)
+
+        if matched_keywords:
+            matches.append({
+                "code": entity_code,
+                "name": ENTITIES[entity_code]["name"],
+                "icon": ENTITIES[entity_code]["icon"],
+                "color": ENTITIES[entity_code]["color"],
+                "path": entity_data["path"],
+                "hipaa": entity_data["hipaa"],
+                "matched_keywords": matched_keywords,
+                "confidence": len(matched_keywords)  # More matches = higher confidence
+            })
+
+    if not matches:
+        return None
+
+    # Return highest confidence match (most keyword matches)
+    return max(matches, key=lambda x: x["confidence"])
+
+def get_ai_route_for_entity(entity_info):
+    """
+    Determine which AI should handle the request based on entity.
+    HIPAA data (COMF) routes through Ollama ONLY for privacy.
+    """
+    if entity_info and entity_info.get("hipaa"):
+        return {
+            "primary": "ollama",
+            "reason": "HIPAA data - processing locally via Ollama for privacy",
+            "warning": True
+        }
+    return {
+        "primary": "claude",
+        "reason": "Standard routing through Claude HUB",
+        "warning": False
+    }
 
 def load_live_data():
     """Load live data from JSON file (updated by Claude/MCP)"""
@@ -615,6 +727,24 @@ with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/command-line.png", width=80)
     st.title("GANDI Command Center")
 
+    # ARIA GOD MODE v6 - Current Working Entity Indicator
+    if st.session_state.current_entity:
+        entity_code = st.session_state.current_entity
+        entity_info = ENTITIES.get(entity_code, {})
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, {entity_info.get('color', '#00D4FF')}33, {entity_info.get('color', '#00D4FF')}11);
+                    border: 1px solid {entity_info.get('color', '#00D4FF')}66;
+                    padding: 0.5rem 0.75rem; border-radius: 8px; margin-bottom: 0.5rem;
+                    text-align: center;">
+            <div style="color: {entity_info.get('color', '#00D4FF')}; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">
+                WORKING ENTITY
+            </div>
+            <div style="color: #FFFFFF; font-size: 1.25rem; font-weight: bold; margin-top: 0.25rem;">
+                {entity_info.get('icon', '📁')} {entity_code}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     # Dark Mode Toggle
     col_mode1, col_mode2 = st.columns([1, 1])
     with col_mode1:
@@ -658,11 +788,51 @@ with st.sidebar:
     # Voice Command Input (Text fallback - voice requires mic library)
     st.subheader("🎤 Voice Command")
     voice_input = st.text_input("Type or speak command:", placeholder="e.g., 'Message Richard about harvest'")
+
+    # ARIA GOD MODE v6 - Autonomous Entity Detection Display
     if voice_input:
+        detected = detect_entity_from_command(voice_input)
+        if detected:
+            # Store in session state for other components
+            st.session_state.current_entity = detected["code"]
+            st.session_state.current_entity_path = detected["path"]
+
+            # Show detected entity with visual indicator
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, {detected['color']}22, {detected['color']}11);
+                        border-left: 4px solid {detected['color']};
+                        padding: 0.75rem; border-radius: 8px; margin: 0.5rem 0;">
+                <div style="color: {detected['color']}; font-weight: bold; font-size: 1.1rem;">
+                    {detected['icon']} {detected['code']} DETECTED
+                </div>
+                <div style="color: #8892b0; font-size: 0.85rem; margin-top: 0.25rem;">
+                    {detected['name']}
+                </div>
+                <div style="color: #606a86; font-size: 0.75rem; margin-top: 0.25rem;">
+                    📁 {detected['path'].split('/')[-1]}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # HIPAA Warning for healthcare data
+            ai_route = get_ai_route_for_entity(detected)
+            if ai_route["warning"]:
+                st.warning("🔒 **HIPAA DATA** - Routing through Ollama (local processing only)")
+            else:
+                st.caption(f"🤖 Route: {ai_route['primary'].upper()}")
+
         if st.button("Send Command", type="primary"):
-            result = send_voice_command(voice_input)
+            # Include entity context in the command
+            command_data = {
+                "command": voice_input,
+                "source": "streamlit",
+                "detected_entity": detected["code"] if detected else None,
+                "entity_path": detected["path"] if detected else None,
+                "hipaa_mode": detected["hipaa"] if detected else False
+            }
+            result = fetch_n8n_webhook("claude-commander", command_data)
             if result and "error" not in result:
-                st.success("Command sent!")
+                st.success(f"Command sent to {detected['code'] if detected else 'HUB'}!")
             else:
                 st.error("Could not send command")
 
