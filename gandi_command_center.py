@@ -22,7 +22,7 @@ Enhancements v4.0:
 import streamlit as st
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import pandas as pd
 import plotly.express as px
@@ -316,19 +316,19 @@ ENTITIES = {
 
 def get_kenya_time():
     """Get current time in Kenya (EAT = UTC+3)"""
-    utc_now = datetime.utcnow()
+    utc_now = datetime.now(timezone.utc)
     kenya_time = utc_now + timedelta(hours=3)
     return kenya_time.strftime("%I:%M %p")
 
 def get_cst_time():
     """Get current time in Minneapolis (CST = UTC-6)"""
-    utc_now = datetime.utcnow()
+    utc_now = datetime.now(timezone.utc)
     cst_time = utc_now - timedelta(hours=6)
     return cst_time.strftime("%I:%M %p")
 
 def is_kenya_window():
     """Check if we're in Kenya Window (6-9 AM CST = 3-6 PM Kenya)"""
-    utc_now = datetime.utcnow()
+    utc_now = datetime.now(timezone.utc)
     cst_hour = (utc_now - timedelta(hours=6)).hour
     return 6 <= cst_hour < 9
 
